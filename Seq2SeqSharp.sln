@@ -76,6 +76,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgSeqConsole", "Tools\ImgS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeqMedical", "Tools\SeqMedical\SeqMedical.csproj", "{21C7B227-5C67-4AB4-828F-A2E142415076}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeqNarrative", "Tools\SeqNarrative\SeqNarrative\SeqNarrative.csproj", "{C388C560-1AE4-4FE0-8AE2-3D971E899F80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -194,6 +196,12 @@ Global
 		{21C7B227-5C67-4AB4-828F-A2E142415076}.Release|Any CPU.Build.0 = Release|Any CPU
 		{21C7B227-5C67-4AB4-828F-A2E142415076}.ReleaseCpuOnly|Any CPU.ActiveCfg = Release|Any CPU
 		{21C7B227-5C67-4AB4-828F-A2E142415076}.ReleaseCpuOnly|Any CPU.Build.0 = Release|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.ReleaseCpuOnly|Any CPU.ActiveCfg = Release|Any CPU
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80}.ReleaseCpuOnly|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -213,6 +221,7 @@ Global
 		{4DBA9DDA-569C-4F31-9C98-84837D2F8148} = {C2DFE174-7167-41D4-A8D2-EC8DC54AA71E}
 		{D5B59E92-8BFF-4B30-844B-E95E67D5A68B} = {C2DFE174-7167-41D4-A8D2-EC8DC54AA71E}
 		{21C7B227-5C67-4AB4-828F-A2E142415076} = {C2DFE174-7167-41D4-A8D2-EC8DC54AA71E}
+		{C388C560-1AE4-4FE0-8AE2-3D971E899F80} = {C2DFE174-7167-41D4-A8D2-EC8DC54AA71E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CAE1535E-6AF4-4CD0-8E90-EBACD99D865A}

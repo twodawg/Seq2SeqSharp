@@ -34,6 +34,30 @@ List<string> labels = ["heart_attack",
 "endocarditis"];
 
 var training = false; // Toggle depending if a retraining is needed (did the statements change?)
+var rootDir = "D:\\Temp\\";
+// Define model parameters
+var opts = new SeqClassificationOptions
+{
+  ModelFilePath = training ? $"{rootDir}model.bin" : $"{rootDir}model.bin.100",
+  SrcLang = "Src",
+  TgtLang = "Labels",
+  ProcessorType = ProcessorTypeEnums.CPU,
+  TrainCorpusPath = $"{rootDir}train",
+  ValidCorpusPaths = $"{rootDir}valid",
+  LogDestination = Logger.Destination.Console,
+  TaskParallelism = 4,
+
+  MaxEpochNum = 100,
+  //MaxSentLength = 1024,
+  //StartLearningRate = 0.01f,
+  EncoderLayerDepth = 6, // Increases the model size
+
+  Task = training ? ModeEnums.Train : ModeEnums.Test,
+  InputTestFile = $"{rootDir}input.txt",
+  OutputFile = $"{rootDir}output.txt",
+  LogLevel = training ? Logger.Level.info : Logger.Level.info,
+};
+Logger.Initialize(opts.LogDestination, opts.LogLevel, $"{opts.Task}_{Utils.GetTimeStamp(DateTime.Now)}.log");
 do
 {
   string prompt = null;
@@ -42,31 +66,7 @@ do
     Console.WriteLine("What are your symptoms?");
     prompt = Console.ReadLine();
   }
-  var rootDir = "D:\\Temp\\";
-  // Define model parameters
-  var opts = new SeqClassificationOptions
-  {
-    ModelFilePath = training ? $"{rootDir}model.bin" : $"{rootDir}model.bin.100",
-    SrcLang = "Src",
-    TgtLang = "Labels",
-    ProcessorType = ProcessorTypeEnums.CPU,
-    TrainCorpusPath = $"{rootDir}train",
-    ValidCorpusPaths = $"{rootDir}valid",
-    LogDestination = Logger.Destination.Console,
-    TaskParallelism = 4,
-
-    MaxEpochNum = 100,
-    //MaxSentLength = 1024,
-    //StartLearningRate = 0.01f,
-    EncoderLayerDepth = 6, // Increases the model size
-
-    Task = training ? ModeEnums.Train : ModeEnums.Test,
-    InputTestFile = $"{rootDir}input.txt",
-    OutputFile = $"{rootDir}output.txt",
-    LogLevel = training ? Logger.Level.info : Logger.Level.err,
-  };
-  Logger.Initialize(opts.LogDestination, opts.LogLevel, $"{opts.Task}_{Utils.GetTimeStamp(DateTime.Now)}.log");
-
+  
   DecodingOptions decodingOptions = opts.CreateDecodingOptions();
   SeqClassification ss = null;
 
@@ -125,7 +125,7 @@ do
 
     if (File.Exists(opts.OutputFile))
     {
-      Logger.WriteLine(Logger.Level.info, ConsoleColor.Yellow, $"Output file '{opts.OutputFile}' exist. Delete it.");
+      //Logger.WriteLine(Logger.Level.info, ConsoleColor.Yellow, $"Output file '{opts.OutputFile}' exist. Delete it.");
       File.Delete(opts.OutputFile);
     }
 
@@ -134,22 +134,18 @@ do
     Stopwatch stopwatch = Stopwatch.StartNew();
 
     ss.Test<SeqClassificationMultiTasksCorpusBatch>(opts.InputTestFile, opts.OutputFile, opts.BatchSize, decodingOptions, opts.SrcSentencePieceModelPath, opts.TgtSentencePieceModelPath);
-
+    
     stopwatch.Stop();
 
-    Logger.WriteLine($"Test mode execution time elapsed: '{stopwatch.Elapsed}'");
+    //Logger.WriteLine($"Test mode execution time elapsed: '{stopwatch.Elapsed}'");
 
-    Console.WriteLine(File.ReadAllText(opts.OutputFile));
+    Console.WriteLine("***\nAns: " + File.ReadAllText(opts.OutputFile));
   }
   void Ss_EvaluationWatcher(object sender, EventArgs e)
   {
     EvaluationEventArg ep = e as EvaluationEventArg;
 
     Logger.WriteLine(Logger.Level.info, ep.Color, ep.Message);
-  }
-  if (opts.Task == ModeEnums.Train)
-  {
-    break;
   }
 }
 while (!training);

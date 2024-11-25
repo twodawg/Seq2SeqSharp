@@ -40,8 +40,8 @@ namespace Seq2SeqSharp.Applications
 
         public SeqClassification(SeqClassificationOptions options, Vocab srcVocab = null, Vocab tgtVocab = null)
            : base(options.DeviceIds, options.ProcessorType, options.ModelFilePath, options.MemoryUsageRatio, options.CompilerOptions,
-                 runValidEveryUpdates: options.RunValidEveryUpdates, updateFreq: options.UpdateFreq, maxDegressOfParallelism: options.TaskParallelism, 
-                 cudaMemoryAllocatorType: options.CudaMemoryAllocatorType, elementType: options.AMP ? DType.Float16 : DType.Float32, saveModelEveryUpdats: options.SaveModelEveryUpdates, 
+                 runValidEveryUpdates: options.RunValidEveryUpdates, updateFreq: options.UpdateFreq, maxDegressOfParallelism: options.TaskParallelism,
+                 cudaMemoryAllocatorType: options.CudaMemoryAllocatorType, elementType: options.AMP ? DType.Float16 : DType.Float32, saveModelEveryUpdats: options.SaveModelEveryUpdates,
                  initLossScaling: options.InitLossScaling, autoCheckTensorCorruption: options.CheckTensorCorrupted)
         {
             m_paddingType = options.PaddingType;
@@ -161,12 +161,21 @@ namespace Seq2SeqSharp.Applications
                 using var targetIdxTensor = computeGraph.Argmax(probs, 1);
                 float[] targetIdx = targetIdxTensor.ToWeightArray();
                 List<string> targetWords = m_modelMetaData.TgtVocab.ConvertIdsToString(targetIdx.ToList());
+
+                List<string> allWords = m_modelMetaData.TgtVocab.IndexToWord.Values.Select(s => s).ToList();
+                var combinedOutput = probs.ToWeightArray().Zip(allWords, (prob, word) => $"{word.PadRight(87)} {prob,10:F8}");
+                Logger.WriteLine(Logger.Level.info, $"\nWrds w/Probs\n{string.Join("\n", combinedOutput)}");
+
                 nr.Output.Add(new List<List<string>>());
 
                 for (int k = 0; k < batchSize; k++)
                 {
                     nr.Output[0].Add(new List<string>());
-                    nr.Output[0][k].Add(targetWords[k]);
+
+                    // Fetch the corresponding probability for the predicted target index
+                    float probAtTargetIdx = probs.GetWeightAt([0, (long)targetIdx[k]]);
+
+                    nr.Output[0][k].Add($"{targetWords[k]} {probAtTargetIdx:F8}");
                 }
             }
 

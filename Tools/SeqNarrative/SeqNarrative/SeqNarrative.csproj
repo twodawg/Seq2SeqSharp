@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Seq2SeqSharp\Seq2SeqSharp.csproj" />
+    <ProjectReference Include="..\..\..\Seq2SeqSharp\Seq2SeqSharp.csproj" />
   </ItemGroup>
 
 </Project>

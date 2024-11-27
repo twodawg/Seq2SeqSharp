@@ -8,7 +8,7 @@ using Seq2SeqSharp.Metrics;
 using Seq2SeqSharp.Optimizer;
 using Seq2SeqSharp.Utils;
 
-var training = ModeEnums.Valid; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
+var training = ModeEnums.Test; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
 var rootDir = "D:\\Temp\\CC250\\";
 // Define model parameters
 // CPU training 26m per epoch
@@ -160,5 +160,5 @@ do
         Logger.WriteLine(Logger.Level.info, ep.Color, ep.Message);
     }
 }
-while (training == ModeEnums.Train);
+while (training == ModeEnums.Test);
 

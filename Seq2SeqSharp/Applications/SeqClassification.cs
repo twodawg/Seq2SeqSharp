@@ -162,20 +162,29 @@ namespace Seq2SeqSharp.Applications
                 float[] targetIdx = targetIdxTensor.ToWeightArray();
                 List<string> targetWords = m_modelMetaData.TgtVocab.ConvertIdsToString(targetIdx.ToList());
 
-                List<string> allWords = m_modelMetaData.TgtVocab.IndexToWord.Values.Select(s => s).ToList();
-                var combinedOutput = probs.ToWeightArray().Zip(allWords, (prob, word) => $"{word.PadRight(87)} {prob,10:F8}");
-                Logger.WriteLine(Logger.Level.info, $"\nWrds w/Probs\n{string.Join("\n", combinedOutput)}");
-
+                if (m_options.Task != Enums.ModeEnums.Valid)
+                {
+                    List<string> allWords = m_modelMetaData.TgtVocab.IndexToWord.Values.Select(s => s).ToList();
+                    var combinedOutput = probs.ToWeightArray().Zip(allWords, (prob, word) => $"{word.PadRight(87)} {prob,10:F8}");
+                    Logger.WriteLine(Logger.Level.info, $"\nWrds w/Probs\n{string.Join("\n", combinedOutput)}");
+                }
                 nr.Output.Add(new List<List<string>>());
 
                 for (int k = 0; k < batchSize; k++)
                 {
                     nr.Output[0].Add(new List<string>());
 
-                    // Fetch the corresponding probability for the predicted target index
-                    float probAtTargetIdx = probs.GetWeightAt([0, (long)targetIdx[k]]);
+                    if (m_options.Task != Enums.ModeEnums.Valid)
+                    {
+                        // Fetch the corresponding probability for the predicted target index
+                        float probAtTargetIdx = probs.GetWeightAt([0, (long)targetIdx[k]]);
 
-                    nr.Output[0][k].Add($"{targetWords[k]} {probAtTargetIdx:F8}");
+                        nr.Output[0][k].Add($"{targetWords[k]} {probAtTargetIdx:F8}");
+                    }
+                    else
+                    {
+                        nr.Output[0][k].Add(targetWords[k]);
+                    }
                 }
             }
 

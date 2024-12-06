@@ -180,7 +180,7 @@ namespace Seq2SeqSharp.Applications
                         float probAtTargetIdx = probs.GetWeightAt([0, (long)targetIdx[k]]);
 
                         nr.Output[0][k].Add($"{targetWords[k]} {probAtTargetIdx:F8}");
-                    }
+          }
                     else
                     {
                         nr.Output[0][k].Add(targetWords[k]);

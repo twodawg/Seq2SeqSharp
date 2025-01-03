@@ -9,16 +9,19 @@ using Seq2SeqSharp.Optimizer;
 using Seq2SeqSharp.Utils;
 
 var training = ModeEnums.Train; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
-var rootDir = "D:\\Temp\\DC260\\";
+var rootDir = "D:\\Temp\\DC4800\\";
 // Define model parameters
 // CPU training 26m per epoch
-// 18 s per epoch on GPU (release) 32 parallel 16 batch 12 encoder depth
 // CC250 25 s per epoch on GPU (release) 16 parallel 16 batch 24 encoder depth - 40m
 // DC260 30 s per epoch on GPU (release) 16 parallel 16 batch 24 encoder depth
 // DC260 55 s per epoch on GPU (release) 8 parallel 8 batch 48 encoder depth
 // DC260 2m55s per epoch on GPU (release) 2 parallel 4 batch 96 encoder depth 16 Multihead
 // DC260 9m15s per epoch on GPU (release) 1 parallel 1 batch 192 encoder depth 16 Multihead
 // DC260 51s per epoch on GPU (release) 8 parallel 16 batch 12 encoder depth 12 Multihead, custom layer sizes per GPT4o, 400mb model gen
+// DC600 1m29s per epoch on GPU (release) 8 parallel 10 batch
+// DC1200 2m20s per epoch 6 parallel 2 batch
+// DC2400 4m per epoch 6 parallel 2 batch
+// DC4800 7m per epoch
 var opts = new SeqClassificationOptions
 {
   ModelFilePath = training == ModeEnums.Train ? $"{rootDir}model.bin" : $"{rootDir}model.bin.5100",
@@ -29,18 +32,20 @@ var opts = new SeqClassificationOptions
   TrainCorpusPath = $"{rootDir}train",
   ValidCorpusPaths = $"{rootDir}valid",
   LogDestination = Logger.Destination.Console,
-  TaskParallelism = 8, //32,             
+  TaskParallelism = 6, //32,             
 
-  MaxEpochNum = 100,
+  MaxEpochNum = 200,
   MaxSentLength = 1024,
-  BatchSize = 16,
-  //StartLearningRate = 0.01f,
-  EncoderLayerDepth = 12, // 12 Increases the model size
+  StartLearningRate = 0.00005f, // 0.0001 - 0.0006
+  BatchSize = 2,
+  EncoderLayerDepth = 12, // 12
   MultiHeadNum = 12, // 8
 
   SrcEmbeddingDim = 768, // 128
   HiddenSize = 768, // 128
   IntermediateSize = 2048, // 512 Feedforward?
+  SaveModelEveryUpdates = 800,
+  RunValidEveryUpdates = 800,
 
   Task = training,
   InputTestFile = $"{rootDir}input.txt",
@@ -103,8 +108,11 @@ do
     ILearningRate learningRate = new DecayLearningRate(opts.StartLearningRate, opts.WarmUpSteps, opts.WeightsUpdateCount,
       opts.LearningRateStepDownFactor, opts.UpdateNumToStepDownLearningRate);
 
-    // Train the model
+    // Train a new model
     ss = new SeqClassification(opts, srcVocab, tgtVocab);
+    
+    // To continue training an existing model
+    //ss = new SeqClassification(opts, null, null);
 
     // Add event handler for monitoring
     ss.StatusUpdateWatcher += Misc.Ss_StatusUpdateWatcher;

@@ -162,7 +162,7 @@ namespace Seq2SeqSharp.Applications
                 float[] targetIdx = targetIdxTensor.ToWeightArray();
                 List<string> targetWords = m_modelMetaData.TgtVocab.ConvertIdsToString(targetIdx.ToList());
 
-                if (m_options.Task != Enums.ModeEnums.Valid)
+                if (m_options.Task == Enums.ModeEnums.Test)
                 {
                     List<string> allWords = m_modelMetaData.TgtVocab.IndexToWord.Values.Select(s => s).ToList();
                     var combinedOutput = probs.ToWeightArray().Zip(allWords, (prob, word) => $"{word.PadRight(87)} {prob,10:F8}");
@@ -174,7 +174,7 @@ namespace Seq2SeqSharp.Applications
                 {
                     nr.Output[0].Add(new List<string>());
 
-                    if (m_options.Task != Enums.ModeEnums.Valid)
+                    if (m_options.Task == Enums.ModeEnums.Test)
                     {
                         // Fetch the corresponding probability for the predicted target index
                         float probAtTargetIdx = probs.GetWeightAt([0, (long)targetIdx[k]]);

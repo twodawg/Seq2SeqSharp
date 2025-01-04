@@ -9,7 +9,8 @@ using Seq2SeqSharp.Optimizer;
 using Seq2SeqSharp.Utils;
 
 var training = ModeEnums.Train; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
-var rootDir = "D:\\Temp\\DC4800\\";
+//var rootDir = "D:\\Temp\\DC4500\\";
+var rootDir = "/workspace/DC4500/";
 // Define model parameters
 // CPU training 26m per epoch
 // CC250 25 s per epoch on GPU (release) 16 parallel 16 batch 24 encoder depth - 40m
@@ -22,6 +23,7 @@ var rootDir = "D:\\Temp\\DC4800\\";
 // DC1200 2m20s per epoch 6 parallel 2 batch
 // DC2400 4m per epoch 6 parallel 2 batch
 // DC4800 7m per epoch
+// DC4500 9m per epoch
 var opts = new SeqClassificationOptions
 {
   ModelFilePath = training == ModeEnums.Train ? $"{rootDir}model.bin" : $"{rootDir}model.bin.5100",
@@ -29,6 +31,7 @@ var opts = new SeqClassificationOptions
   TgtLang = "Labels",
   ProcessorType = ProcessorTypeEnums.GPU,
   AttentionType = AttentionTypeEnums.FlashAttentionV2,
+  DeviceIds = "0,1", // "0,1",
   TrainCorpusPath = $"{rootDir}train",
   ValidCorpusPaths = $"{rootDir}valid",
   LogDestination = Logger.Destination.Console,
@@ -67,20 +70,20 @@ do
 
   if (opts.Task == ModeEnums.Train)
   {
-    List<string> inputSentences = [.. File.ReadAllLines($"{opts.TrainCorpusPath}\\PatientCareReportNarratives.txt")];
+    List<string> inputSentences = [.. File.ReadAllLines($"{opts.TrainCorpusPath}/PatientCareReportNarratives.txt")];
     // Cannot contain spaces
-    List<string> labels = [.. File.ReadAllLines($"{opts.TrainCorpusPath}\\DiagCodes.txt")];
+    List<string> labels = [.. File.ReadAllLines($"{opts.TrainCorpusPath}/DiagCodes.txt")];
     // Save each labels with a tab and then each inputSentences to D:\Temp\train.enu.snt
     Directory.CreateDirectory(opts.TrainCorpusPath);
-    File.WriteAllLines($"{opts.TrainCorpusPath}\\train.src.snt", inputSentences.Select((sentence, index) => $"{sentence}"));
-    File.WriteAllLines($"{opts.TrainCorpusPath}\\train.labels.snt", inputSentences.Select((sentence, index) => $"{labels[index]}"));
+    File.WriteAllLines($"{opts.TrainCorpusPath}/train.src.snt", inputSentences.Select((sentence, index) => $"{sentence}"));
+    File.WriteAllLines($"{opts.TrainCorpusPath}/train.labels.snt", inputSentences.Select((sentence, index) => $"{labels[index]}"));
 
-    List<string> valInputSentences = [.. File.ReadAllLines($"{opts.ValidCorpusPaths}\\PatientCareReportNarratives.txt")];
+    List<string> valInputSentences = [.. File.ReadAllLines($"{opts.ValidCorpusPaths}/PatientCareReportNarratives.txt")];
     // Cannot contain spaces
-    List<string> valLabels = [.. File.ReadAllLines($"{opts.ValidCorpusPaths}\\DiagCodes.txt")];
+    List<string> valLabels = [.. File.ReadAllLines($"{opts.ValidCorpusPaths}/DiagCodes.txt")];
     Directory.CreateDirectory(opts.ValidCorpusPaths);
-    File.WriteAllLines($"{opts.ValidCorpusPaths}\\valid.src.snt", valInputSentences.Select((sentence, index) => $"{sentence}"));
-    File.WriteAllLines($"{opts.ValidCorpusPaths}\\valid.labels.snt", valInputSentences.Select((sentence, index) => $"{labels[index]}"));
+    File.WriteAllLines($"{opts.ValidCorpusPaths}/valid.src.snt", valInputSentences.Select((sentence, index) => $"{sentence}"));
+    File.WriteAllLines($"{opts.ValidCorpusPaths}/valid.labels.snt", valInputSentences.Select((sentence, index) => $"{labels[index]}"));
 
     // Prepare data for Seq2SeqSharp
     // Load train corpus

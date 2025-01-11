@@ -9,8 +9,8 @@ using Seq2SeqSharp.Optimizer;
 using Seq2SeqSharp.Utils;
 
 var training = ModeEnums.Train; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
-var rootDir = "D:/Temp/DC4500/";
-//var rootDir = "/workspace/DC4500/";
+//var rootDir = "D:/Temp/DC4500/";
+var rootDir = "/workspace/DC4500/";
 // Define model parameters
 // CPU training 26m per epoch
 // CC250 25 s per epoch on GPU (release) 16 parallel 16 batch 24 encoder depth - 40m
@@ -35,7 +35,7 @@ var opts = new SeqClassificationOptions
   TrainCorpusPath = $"{rootDir}train",
   ValidCorpusPaths = $"{rootDir}valid",
   LogDestination = Logger.Destination.Console,
-  TaskParallelism = 12, //32,             
+  TaskParallelism = 16, //32,             
 
   MaxEpochNum = 200,
   MaxSentLength = 1024,

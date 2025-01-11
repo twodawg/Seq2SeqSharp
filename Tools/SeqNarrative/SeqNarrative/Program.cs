@@ -9,8 +9,8 @@ using Seq2SeqSharp.Optimizer;
 using Seq2SeqSharp.Utils;
 
 var training = ModeEnums.Train; // Toggle depending if a retraining is needed (did the statements change?) - is the model name correct?
-//var rootDir = "D:\\Temp\\DC4500\\";
-var rootDir = "/workspace/DC4500/";
+var rootDir = "D:/Temp/DC4500/";
+//var rootDir = "/workspace/DC4500/";
 // Define model parameters
 // CPU training 26m per epoch
 // CC250 25 s per epoch on GPU (release) 16 parallel 16 batch 24 encoder depth - 40m
@@ -31,16 +31,16 @@ var opts = new SeqClassificationOptions
   TgtLang = "Labels",
   ProcessorType = ProcessorTypeEnums.GPU,
   AttentionType = AttentionTypeEnums.FlashAttentionV2,
-  DeviceIds = "0,1", // "0,1",
+  DeviceIds = "0", // "0,1",
   TrainCorpusPath = $"{rootDir}train",
   ValidCorpusPaths = $"{rootDir}valid",
   LogDestination = Logger.Destination.Console,
-  TaskParallelism = 6, //32,             
+  TaskParallelism = 12, //32,             
 
   MaxEpochNum = 200,
   MaxSentLength = 1024,
   StartLearningRate = 0.00005f, // 0.0001 - 0.0006
-  BatchSize = 2,
+  BatchSize = 8,
   EncoderLayerDepth = 12, // 12
   MultiHeadNum = 12, // 8
 
@@ -112,10 +112,15 @@ do
       opts.LearningRateStepDownFactor, opts.UpdateNumToStepDownLearningRate);
 
     // Train a new model
-    ss = new SeqClassification(opts, srcVocab, tgtVocab);
-    
-    // To continue training an existing model
-    //ss = new SeqClassification(opts, null, null);
+    if (!File.Exists(opts.ModelFilePath))
+    {
+      ss = new SeqClassification(opts, srcVocab, tgtVocab);
+    }
+    else
+    {
+      // To continue training an existing model
+      ss = new SeqClassification(opts, null, null);
+    }
 
     // Add event handler for monitoring
     ss.StatusUpdateWatcher += Misc.Ss_StatusUpdateWatcher;

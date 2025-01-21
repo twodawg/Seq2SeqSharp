@@ -31,7 +31,7 @@ var opts = new SeqClassificationOptions
   TgtLang = "Labels",
   ProcessorType = ProcessorTypeEnums.GPU,
   AttentionType = AttentionTypeEnums.FlashAttentionV2,
-  DeviceIds = "0", // "0,1",
+  DeviceIds = "0,1", // "0,1",
   TrainCorpusPath = $"{rootDir}train",
   ValidCorpusPaths = $"{rootDir}valid",
   LogDestination = Logger.Destination.Console,
@@ -39,7 +39,7 @@ var opts = new SeqClassificationOptions
 
   MaxEpochNum = 200,
   MaxSentLength = 1024,
-  StartLearningRate = 0.00005f, // 0.0001 - 0.0006
+  StartLearningRate = 0.000001f, // 0.0001 - 0.0006
   BatchSize = 8,
   EncoderLayerDepth = 12, // 12
   MultiHeadNum = 12, // 8
